@@ -1,10 +1,12 @@
 .container {
-  padding: 0 2rem;
+  /* padding: 0 6rem; */
+  z-index: 2;
+  position: relative;
 }
 
 .main {
   min-height: 100vh;
-  padding: 4rem 0;
+  /* padding: 4rem 0; */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -28,16 +30,16 @@
   flex-grow: 1;
 }
 
-.title a {
+/* .title a {
   color: #0070f3;
   text-decoration: none;
-}
+} */
 
-.title a:hover,
+/* .title a:hover,
 .title a:focus,
 .title a:active {
   text-decoration: underline;
-}
+} */
 
 .title {
   margin: 0;
@@ -51,7 +53,7 @@
 }
 
 .description {
-  margin: 4rem 0;
+  margin: 2rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
 }
@@ -74,6 +76,20 @@
 }
 
 .card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: saturate(180%) blur(14px);
+}
+
+.cardNoBg {
+  background: none !important;
+  backdrop-filter: saturate(180%) blur(14px);
+}
+
+.cardBg {
+  background-color: #1F163F !important;
+}
+
+/* .card {
   margin: 1rem;
   padding: 1.5rem;
   text-align: left;
@@ -101,7 +117,7 @@
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.5;
-}
+} */
 
 .logo {
   height: 1em;
@@ -113,4 +129,12 @@
     width: 100%;
     flex-direction: column;
   }
+}
+
+.bgWrap {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 1;
 }
