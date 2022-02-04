@@ -15,14 +15,14 @@ import { formatSocial } from '../utils/formatSocial'
 import { TwitterTimelineEmbed } from 'react-twitter-embed'
 import { Container, Row, Col, Spacer, Loading, Link, Text, Card } from '@nextui-org/react'
 
-const client = new GraphQLClient(process.env.GITHUB_API_ENDPOINT);
+const client = new GraphQLClient(process.env.NEXT_PUBLIC_GITHUB_API_ENDPOINT);
 
-const fetcherSantiment = query => request(process.env.SANTIMENT_API_ENDPOINT, query);
+const fetcherSantiment = query => request(process.env.NEXT_PUBLIC_SANTIMENT_API_ENDPOINT, query);
 const fetcherGithub = (query, headers) => client.request({document: query, requestHeaders: headers});
 const fetcherMedium = url => fetch(url).then(r => r.json());
 
 const githubToken = {
-  authorization: 'Bearer ' + process.env.GITHUB_API_KEY,
+  authorization: 'Bearer ' + process.env.NEXT_PUBLIC_GITHUB_API_KEY,
 };
 
 export default function Dashboard() {
@@ -31,7 +31,7 @@ export default function Dashboard() {
   const { data: socialData, error: socialError } = useSwr(socialQuery, fetcherSantiment);
   const { data: marketData, error: marketError } = useSwr(marketQuery, fetcherSantiment);
   const { data: githubData, error: githubError } = useSwr([githubQuery, githubToken], fetcherGithub);
-  const { data: mediumData, error: mediumError } = useSwr(process.env.MEDIUM_API_ENDPOINT, fetcherMedium);
+  const { data: mediumData, error: mediumError } = useSwr(process.env.NEXT_PUBLIC_MEDIUM_API_ENDPOINT, fetcherMedium);
   console.log( {data, error} );
   console.log( {socialData, socialError} );
   console.log( {marketData, marketError} );
@@ -196,7 +196,6 @@ export default function Dashboard() {
                       </Card>
                     </Col>
                   </Row>
-
                 
                   <Spacer y={1}/>
                 
