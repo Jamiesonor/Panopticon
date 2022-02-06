@@ -8,12 +8,14 @@ import SocialChart from '../components/socialChart'
 import Sentiment from '../components/sentiment'
 import Github from '../components/github'
 import Medium from '../components/medium'
-import { santimentQuery, socialQuery, githubQuery, marketQuery } from '../utils/queries'
+import Anomaly from '../components/anomaly'
+import { santimentQuery, socialQuery, githubQuery, marketQuery, anomalyQuery } from '../utils/queries'
 import { GraphQLClient, request } from 'graphql-request'
 import { formatChart } from '../utils/formatChart'
 import { formatSocial } from '../utils/formatSocial'
+import { sentimentScore } from '../utils/sentimentScore'
 import { TwitterTimelineEmbed } from 'react-twitter-embed'
-import { Container, Row, Col, Spacer, Loading, Link, Text, Card } from '@nextui-org/react'
+import { Container, Row, Col, Spacer, Loading, Text, Card, Collapse } from '@nextui-org/react'
 
 const client = new GraphQLClient(process.env.NEXT_PUBLIC_GITHUB_API_ENDPOINT);
 
@@ -32,20 +34,32 @@ export default function Dashboard() {
   const { data: marketData, error: marketError } = useSwr(marketQuery, fetcherSantiment);
   const { data: githubData, error: githubError } = useSwr([githubQuery, githubToken], fetcherGithub);
   const { data: mediumData, error: mediumError } = useSwr(process.env.NEXT_PUBLIC_MEDIUM_API_ENDPOINT, fetcherMedium);
+  const { data: anomalyData, error: anomalyError } = useSwr(anomalyQuery, fetcherSantiment);
+
   console.log( {data, error} );
   console.log( {socialData, socialError} );
   console.log( {marketData, marketError} );
   console.log( {githubData, githubError} );
   console.log( {mediumData, mediumError} );
+  console.log( {anomalyData, anomalyError} );
 
-  if (error || socialError || marketError || githubError || mediumError) return <div>failed to load</div>
-  if (!data || !socialData || !marketData || !githubData || !mediumData) return (
+  if (error || socialError || marketError || githubError || mediumError || anomalyError) return <div>failed to load</div>
+  if (!data || !socialData || !marketData || !githubData || !mediumData || !anomalyData) return (
     <div className={styles.container}>
       <div className={styles.main}>
         <Loading size="xl" color="success"><div style={{padding: "0.5rem 0"}}>Crunching numbers...</div></Loading>
       </div>
     </div>
   )
+
+  // if (error || githubError || mediumError) return <div>failed to load</div>
+  // if (!data || !githubData || !mediumData) return (
+  //   <div className={styles.container}>
+  //     <div className={styles.main}>
+  //       <Loading size="xl" color="success"><div style={{padding: "0.5rem 0"}}>Crunching numbers...</div></Loading>
+  //     </div>
+  //   </div>
+  // )
 
   let formattedChartData = formatChart(data);
   let formattedSocialData = formatSocial(socialData);
@@ -88,10 +102,26 @@ export default function Dashboard() {
                           height={22}
                         />
                       </div>
-                      panopticon
+                      Panopticon
                     </a>
                   </h3>
                   <div style={{display: "flex", height: "1px", width: "100%", background: "linear-gradient(90deg, rgba(224, 225, 226, 0) 0%, rgb(224, 225, 226) 47.22%, rgba(224, 225, 226, 0.157) 94.44%)"}}></div>
+                  <Collapse.Group className={styles.cardNoBg} shadow style={{marginTop: "40px"}}>
+                    <Collapse title="Dashboard">
+                    </Collapse>
+
+                    <Collapse title="Financial">
+                    </Collapse>
+
+                    <Collapse title="Social">
+                    </Collapse>
+
+                    <Collapse title="Development">
+                    </Collapse>
+
+                    <Collapse title="Governance">
+                    </Collapse>
+                  </Collapse.Group>
                   <Spacer y={60} />
                 </div>
               </Card>
@@ -138,7 +168,7 @@ export default function Dashboard() {
                 <Spacer x={1}/>
                 <Col>
                   <Card className={styles.card} hoverable>
-                    <h3>High / Low</h3>
+                    <h3>High / Low - (24h)</h3>
                     ${marketData.ohlc[1].highPriceUsd.toFixed(2)} / ${marketData.ohlc[1].lowPriceUsd.toFixed(2)}
                   </Card>
                 </Col>
@@ -176,7 +206,7 @@ export default function Dashboard() {
                     <Col span={12}>
                       <Card className={styles.card}>
                         <p>Anomaly Detection</p>
-                        <Spacer y={6}/>
+                        <Anomaly data={anomalyData} />
                       </Card>
                     </Col>
                     
@@ -189,9 +219,11 @@ export default function Dashboard() {
                           <Sentiment data={scores} />
                         </div>
                         <Card className={styles.cardBg} style={{marginTop: "-100px"}} >
-                          <div style={{height: "100px"}}>
-
+                          <div style={{height: "100px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+                            <h1 style={{marginTop: "-15px"}}>{sentimentScore(scores)}% </h1>
+                            <div style={{marginTop: "-15px"}}>(30d)</div>
                           </div>
+                          
                         </Card>
                       </Card>
                     </Col>
@@ -216,8 +248,18 @@ export default function Dashboard() {
                         <Medium data={mediumData} />
                       </Card>
                     </Col>
-                    
+
                   </Row>
+                    
+                  <Spacer y={1}/>
+
+                  <Row>
+                    <Card className={styles.card}>
+                      <p>Governance</p>
+                      <Spacer y={1}/>
+                    </Card>
+                  </Row>
+
                 </Col>
                 
                 <Spacer x={1}/>

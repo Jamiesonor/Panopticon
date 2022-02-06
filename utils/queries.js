@@ -162,4 +162,18 @@ const githubQuery = `{
     }
 }`
 
-export { santimentQuery, socialQuery, marketQuery, githubQuery };
+const anomalyQuery = `{
+    getMetric(metric: "amount_in_top_holders") {
+        timeseriesData(
+            slug: "rari-governance-token"
+            from: "utc_now-60d"
+            to: "utc_now"
+            interval: "1d"
+        ) {
+            datetime
+            value
+        }
+    }
+}`
+
+export { santimentQuery, socialQuery, marketQuery, githubQuery, anomalyQuery };
